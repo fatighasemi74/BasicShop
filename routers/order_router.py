@@ -1,23 +1,3 @@
-# from fastapi import FastAPI
-# from routers import order_router
-# from database import Database
-# app = FastAPI()
-
-# @app.on_event("startup")
-# async def startup_event():
-#     # Initialize the database connection
-#     db = Database.get_db()
-
-# @app.on_event("shutdown")
-# async def shutdown_event():
-#     # Properly close the database connection
-#     if Database.client:
-#         Database.client.close()
-# # app.include_router(user_router.router)
-# # app.include_router(product_router.router)
-# app.include_router(order_router.router)
-
-
 from fastapi import FastAPI, HTTPException, APIRouter
 from services.order_service import OrderService
 from database import Database
@@ -45,4 +25,3 @@ async def hello():
     await db.order.insert_one({"product_name": "Widget", "quantity": 2})
     
     print("Data inserted")
-
