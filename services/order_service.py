@@ -1,4 +1,4 @@
-from schemas.order import Order
+from bson import ObjectId
 
 class OrderService:
     def __init__(self, db):
@@ -17,7 +17,11 @@ class OrderService:
         cursor = self.db["orders"].find({})
         orders = await cursor.to_list(length=None)
         return orders
-    
+
+    async def get_product_by_id(self, order_id):
+        order = await self.db["orders"].find_one({"_id": ObjectId(order_id)})
+        return order
+
     async def get_order_by_user(self, user_id):
         cursor = self.db["orders"].find({"user_id": user_id})
         orders = await cursor.to_list(length=None)
