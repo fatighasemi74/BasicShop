@@ -5,7 +5,7 @@ from bson import ObjectId
 
 
 class Order(BaseModel):
-    order_id: int
+    order_id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")
     user_id: int
     item_ids: List[int]
     total_cost: float
