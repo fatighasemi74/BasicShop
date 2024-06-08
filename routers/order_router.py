@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 
-@router.post("/orders/")
+@router.post("/orders/", status_code=201)
 async def create_order(order_request: CreateOrderRequest):
     db = Database.get_db()
     order_service = OrderService(db)
