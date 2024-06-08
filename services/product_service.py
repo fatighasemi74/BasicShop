@@ -15,7 +15,7 @@ class ProductService:
         result = await self.db["product"].insert_one(product_document)
         return str(result.inserted_id)
 
-    async def get_product(self):
+    async def get_products(self):
         cursor = self.db["product"].find({})
         products = await cursor.to_list(length=None)
         return products

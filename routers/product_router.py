@@ -2,6 +2,8 @@ from fastapi import HTTPException, APIRouter, Depends, Body
 from schemas.product import ProductCreateRequest, ProductModel
 from use_cases.product_use_case import ProductUseCase
 from database import Database
+from typing import List
+
 
 router = APIRouter()
 
@@ -9,7 +11,7 @@ router = APIRouter()
 async def create_product(product_request: ProductCreateRequest, db = Depends(Database.get_db)):
     product_use_case = ProductUseCase(db)
     try:
-        product_id = await product_use_case.place_order(
+        product_id = await product_use_case.create_product(
             name=product_request.name,
             description=product_request.description,
             price=product_request.price,
@@ -24,3 +26,12 @@ async def create_product(product_request: ProductCreateRequest, db = Depends(Dat
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str)
+
+@router.get("/products/", response_model=List[ProductModel], status_code=200)
+async def get_products(db=Depends(Database.get_db)):
+    product_use_case = ProductUseCase(db)
+    try:
+        products = await product_use_case.get_products()
+        return products
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
