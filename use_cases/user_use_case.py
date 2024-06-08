@@ -14,3 +14,7 @@ class UserUseCase:
     async def get_users(self):
         users = await self.user_service.get_users()
         return users
+    
+    async def get_user_by_id(self, user_id: str):
+        user = await self.user_service.get_user_by_id(user_id)
+        return user

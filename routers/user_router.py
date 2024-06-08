@@ -1,4 +1,4 @@
-from fastapi import HTTPException, APIRouter, Depends, Body
+from fastapi import HTTPException, APIRouter, Depends, Body, Path
 from schemas.user import UserCreateRequest, UserModel
 from use_cases.user_use_case import UserUseCase
 from typing import List
@@ -27,5 +27,17 @@ async def get_users(db=Depends(Database.get_db)):
     try:
         users = await user_use_case.get_users()
         return users
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/users/{user_id}", response_model=UserModel, status_code=200)
+async def get_user_by_id(user_id: str = Path(..., description="The ID of the user to retrieve"), db=Depends(Database.get_db)):
+    user_use_case = UserUseCase(db)
+    try:
+        user = await user_use_case.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
