@@ -1,4 +1,4 @@
-from fastapi import HTTPException, APIRouter, Depends, Body
+from fastapi import HTTPException, APIRouter, Depends, Body, Path
 from schemas.product import ProductCreateRequest, ProductModel
 from use_cases.product_use_case import ProductUseCase
 from database import Database
@@ -33,5 +33,18 @@ async def get_products(db=Depends(Database.get_db)):
     try:
         products = await product_use_case.get_products()
         return products
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.get("/products/{product_id}", response_model=ProductModel, status_code=200)
+async def get_product_by_id(product_id: str = Path(..., description="The ID of the product to retrieve"), db=Depends(Database.get_db)):
+    product_use_case = ProductUseCase(db)
+    try:
+        product = await product_use_case.get_product_by_id(product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="product not found")
+        return product
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

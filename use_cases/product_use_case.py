@@ -12,3 +12,7 @@ class ProductUseCase:
     async def get_products(self):
         products = await self.product_service.get_products()
         return products
+
+    async def get_product_by_id(self, product_id: str):
+        product = await self.product_service.get_product_by_id(product_id)
+        return product
