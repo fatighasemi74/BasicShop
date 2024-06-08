@@ -50,8 +50,8 @@ class OrderService:
         orders = await cursor.to_list(length=None)
         return orders
 
-    async def get_product_by_id(self, order_id):
-        order = await self.db["orders"].find_one({"_id": ObjectId(order_id)})
+    async def get_order_by_id(self, order_id):
+        order = await self.db["order"].find_one({"_id": ObjectId(order_id)})
         return order
 
     async def get_order_by_user(self, user_id):

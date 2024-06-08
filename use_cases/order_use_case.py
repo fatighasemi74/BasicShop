@@ -10,3 +10,7 @@ class OrderUseCase:
     async def get_orders(self):
         products = await self.order_service.get_orders()
         return products
+
+    async def get_order_by_id(self, order_id: str):
+        order = await self.order_service.get_order_by_id(order_id)
+        return order
