@@ -3,19 +3,25 @@ from typing import List
 from .enums import OrderStatus
 from bson import ObjectId
 
+class ProductItem(BaseModel):
+    product_id: str
+    quantity: int
 
 class Order(BaseModel):
     order_id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")
     user_id: int
-    item_ids: List[int]
+    item_ids: List[ProductItem]
     total_cost: float
     status: OrderStatus = OrderStatus.PENDING 
-    quantity: int
-    order_id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")
+    # quantity: int
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {
             ObjectId: str  # Convert ObjectId to string for JSON responses
         }
+
+class CreateOrderRequest(BaseModel):
+    user_id: int
+    items: List[ProductItem]
