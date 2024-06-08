@@ -3,6 +3,13 @@ from bson import ObjectId
 from typing import Optional
 from .enums import UserRole
 
+class UserCreateRequest(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+    role: UserRole
+    bio: Optional[str] = None
+
 class UserModel(BaseModel):
     user_id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")
     first_name: str

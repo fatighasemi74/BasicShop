@@ -17,38 +17,38 @@ class UserService:
             "is_active": True, 
             "bio": bio
         }
-        result = await self.db["users"].insert_one(user_document)
+        result = await self.db["user"].insert_one(user_document)
         return str(result.inserted_id)  
 
     async def get_user_by_id(self, user_id):
-        user = await self.db["users"].find_one({"_id": ObjectId(user_id)})
+        user = await self.db["user"].find_one({"_id": ObjectId(user_id)})
         return user
 
     async def get_user(self):
-        cursor = self.db["users"].find({})
+        cursor = self.db["user"].find({})
         users = await cursor.to_list(length=None)
         return users
 
     async def update_user_by_id(self, user_id, update_fields):
-        result = await self.db["users"].update_one(
+        result = await self.db["user"].update_one(
             {"_id": ObjectId(user_id)},
             {"$set": update_fields}
         )
         return result.modified_count > 0
 
     async def delete_user_by_id(self, user_id):
-        result = await self.db["users"].delete_one({"_id": ObjectId(user_id)})
+        result = await self.db["user"].delete_one({"_id": ObjectId(user_id)})
         return result.deleted_count > 0
 
     async def set_user_active_status(self, user_id, is_active: bool):
-        result = await self.db["users"].update_one(
+        result = await self.db["user"].update_one(
             {"_id": ObjectId(user_id)},
             {"$set": {"is_active": is_active}}
         )
         return result.modified_count > 0
 
     async def verify_user_email(self, user_id):
-        result = await self.db["users"].update_one(
+        result = await self.db["user"].update_one(
             {"_id": ObjectId(user_id)},
             {"$set": {"email_verified": True}}
         )
