@@ -45,7 +45,7 @@ class OrderService:
         return str(result.inserted_id)
 
 
-    async def get_order(self):
+    async def get_orders(self):
         cursor = self.db["order"].find({})
         orders = await cursor.to_list(length=None)
         return orders

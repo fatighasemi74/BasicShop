@@ -1,8 +1,9 @@
-from fastapi import HTTPException, APIRouter
+from fastapi import HTTPException, APIRouter, Depends
 from services.order_service import OrderService
 from database import Database
 from typing import List
-from schemas.order import ProductItem, CreateOrderRequest  
+from schemas.order import ProductItem, CreateOrderRequest, Order  
+from use_cases.order_use_case import OrderUseCase
 
 
 router = APIRouter()
@@ -18,3 +19,13 @@ async def create_order(order_request: CreateOrderRequest):
         return {"order_id": order_id}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/orders/", response_model=List[Order], status_code=200)
+async def get_orders(db=Depends(Database.get_db)):
+    order_use_case = OrderUseCase(db)
+    try:
+        orders = await order_use_case.get_orders()
+        return orders
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

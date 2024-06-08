@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing import List
 from .enums import OrderStatus
 from bson import ObjectId
@@ -15,11 +15,17 @@ class Order(BaseModel):
     status: OrderStatus = OrderStatus.PENDING 
     # quantity: int
 
+
+    @validator('order_id', pre=True, always=True)
+    def convert_id(cls, v):
+        return str(v)
+
     class Config:
+        orm_mode = True
         populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {
-            ObjectId: str  # Convert ObjectId to string for JSON responses
+            ObjectId: lambda oid: str(oid)  # Convert ObjectId to string for JSON responses
         }
 
 class CreateOrderRequest(BaseModel):
