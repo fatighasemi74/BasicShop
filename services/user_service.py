@@ -22,9 +22,11 @@ class UserService:
 
     async def get_user_by_id(self, user_id):
         user = await self.db["user"].find_one({"_id": ObjectId(user_id)})
+        if user:
+            user['user_id'] = user.pop('_id')
         return user
 
-    async def get_user(self):
+    async def get_users(self):
         cursor = self.db["user"].find({})
         users = await cursor.to_list(length=None)
         return users
