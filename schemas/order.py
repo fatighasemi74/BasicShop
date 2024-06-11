@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from typing import List
 from .enums import OrderStatus
 from bson import ObjectId
@@ -8,7 +8,7 @@ class ProductItem(BaseModel):
     quantity: int
 
 class Order(BaseModel):
-    order_id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")
+    order_id: str 
     user_id: int
     item_ids: List[ProductItem]
     total_cost: float
@@ -16,17 +16,11 @@ class Order(BaseModel):
     # quantity: int
 
 
-    @validator('order_id', pre=True, always=True)
-    def convert_id(cls, v):
-        return str(v)
 
     class Config:
         orm_mode = True
-        populate_by_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {
-            ObjectId: lambda oid: str(oid)  # Convert ObjectId to string for JSON responses
-        }
+        use_enum_values = True
+
 
 class CreateOrderRequest(BaseModel):
     user_id: int

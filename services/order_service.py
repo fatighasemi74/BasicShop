@@ -1,20 +1,23 @@
-from bson import ObjectId
 from typing import List
 from schemas.order import ProductItem
 from schemas.enums import OrderStatus
+import uuid
 
 
 
 class OrderService:
     def __init__(self, db):
         self.db = db
+        if 'orders' not in self.db:
+            self.db['orders'] = {}
+        if 'products' not in self.db:
+            self.db['products'] = {}
 
     async def create_order(self, user_id: int, items: List[ProductItem]):
         total_cost = 0
         item_data = []
         for item in items:
-            product = await self.db["product"].find_one({"_id": ObjectId(item.product_id)})
-            print(product)
+            product = self.db["products"].get(item.product_id)
             if not product:
                 raise ValueError(f"product with id {item.product_id} not found.")
             if product['stock_quantity'] < item.quantity:
@@ -23,17 +26,15 @@ class OrderService:
             item_cost = product['price'] * item.quantity
             total_cost += item_cost
 
-            await self.db["product"].update_one(
-                {"_id": item.product_id},
-                {"$inc": {"stock_quantity": -item.quantity}}
-            )
+            item_cost = product['price'] * item.quantity
+            total_cost += item_cost
 
             item_data.append({
                 "product_id": item.product_id,
                 "quantity": item.quantity,
                 "cost": item_cost
             })
-        
+        order_id = str(uuid.uuid4())
         order_document = {
             "user_id": user_id,
             "item_ids": item_data,
@@ -41,42 +42,30 @@ class OrderService:
             "status": OrderStatus.PENDING.value
         }
 
-        result = await self.db["order"].insert_one(order_document)
-        return str(result.inserted_id)
+        self.db["orders"][order_id] = order_document
+        return order_id
 
 
     async def get_orders(self):
-        cursor = self.db["order"].find({})
-        orders = await cursor.to_list(length=None)
-        return orders
+        return list(self.db["orders"].values())
 
     async def get_order_by_id(self, order_id):
-        order = await self.db["order"].find_one({"_id": ObjectId(order_id)})
-        return order
+        return self.db["orders"].get(order_id)
 
     async def get_order_by_user(self, user_id):
-        cursor = self.db["orders"].find({"user_id": user_id})
-        orders = await cursor.to_list(length=None)
-        return orders
+        return [order for order in self.db["orders"].values() if order["user_id"] == user_id]
 
     async def get_order_by_product(self, product_id):
-        cursor = self.db["orders"].find({"product_id": product_id})
-        orders = await cursor.to_list(length=None)
-        return orders
-    
+        return [order for order in self.db["orders"].values() if any(item["product_id"] == product_id for item in order["items"])]
+
     async def update_order_by_id(self, order_id, update_fields):
-        result = await self.db["orders"].update_one(
-            {"_id": order_id},
-            {"$set": update_fields}
-        )
-        if result.modified_count:
+        if order_id in self.db["orders"]:
+            self.db["orders"][order_id].update(update_fields)
             return True
-        else:
-            return False
+        return False
     
     async def delete_order_by_id(self, order_id):
-        result = await self.db["orders"].delete_one({"_id": order_id})
-        if result.deleted_count:
-            return True  
-        else:
-            return False
+        if order_id in self.db["orders"]:
+            del self.db["orders"][order_id]
+            return True
+        return False

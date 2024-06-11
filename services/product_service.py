@@ -1,10 +1,9 @@
-from bson import ObjectId
 
 class ProductService:
     def __init__(self, db):
         self.db = db
         if 'products' not in self.db:
-            self.db['products'] = []
+            self.db['products'] = {}
 
     async def create_product(self, name: str, description: str, price: float, stock_quantity: int):
         product_id = str(len(self.db['products']) + 1)
@@ -16,26 +15,23 @@ class ProductService:
             "stock_quantity": stock_quantity
         }
 
-        result = self.db['products'].append(product_document)
+        self.db['products'][product_id] = product_document
         return product_id
 
     async def get_products(self):
-        return self.db['products']
+        return list(self.db['products'].values())
 
     async def get_product_by_id(self, product_id):
-        for product in self.db['products']:
-            if product['product_id'] == product_id:
-                return product
-        return None
+        return self.db['products'].get(product_id)
 
     async def update_product_by_id(self, product_id, update_fields):
-        for index, product in enumerate(self.db['products']):
-            if product['product_id'] == product_id:
-                self.db['products'][index].update(update_fields)
+        if product_id in self.db['products']:
+                self.db['products'][product_id].update(update_fields)
                 return True
         return False
 
     async def delete_product_by_id(self, product_id): 
-        initial_count = len(self.db['products'])
-        self.db['products'] = [product for product in self.db['products'] if product['product_id'] != product_id]
-        return len(self.db['products']) != initial_count
+        if product_id in self.db['products']:
+            del self.db['products'][product_id]
+            return True
+        return False

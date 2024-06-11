@@ -1,14 +1,17 @@
 from pydantic import EmailStr
-from bson import ObjectId
 from typing import Optional
 from schemas.enums import UserRole
 
 class UserService:
     def __init__(self, db):
         self.db = db
+        if 'users' not in self.db:
+            self.db['users'] = {}
 
     async def create_user(self, first_name: str, last_name: str, email: EmailStr, role: UserRole, bio: Optional[str] = None):
+        user_id = str(len(self.db['users']) + 1)
         user_document = {
+            'user_id': user_id,
             "first_name": first_name,
             "last_name": last_name,
             "email": email,
@@ -17,41 +20,35 @@ class UserService:
             "is_active": True, 
             "bio": bio
         }
-        result = await self.db["user"].insert_one(user_document)
-        return str(result.inserted_id)  
+        self.db["users"][user_id] = user_document
+        return user_id
 
     async def get_user_by_id(self, user_id):
-        user = await self.db["user"].find_one({"_id": ObjectId(user_id)})
-        if user:
-            user['user_id'] = user.pop('_id')
-        return user
+        return self.db['users'].get(user_id)
 
     async def get_users(self):
-        cursor = self.db["user"].find({})
-        users = await cursor.to_list(length=None)
-        return users
+        return list(self.db['users'].values())
 
     async def update_user_by_id(self, user_id, update_fields):
-        result = await self.db["user"].update_one(
-            {"_id": ObjectId(user_id)},
-            {"$set": update_fields}
-        )
-        return result.modified_count > 0
+        if user_id in self.db['users']:
+            self.db['users'][user_id].update(update_fields)
+            return True
+        return False
 
     async def delete_user_by_id(self, user_id):
-        result = await self.db["user"].delete_one({"_id": ObjectId(user_id)})
-        return result.deleted_count > 0
+        if user_id in self.db['users']:
+            del self.db['users'][user_id]
+            return True
+        return False
 
     async def set_user_active_status(self, user_id, is_active: bool):
-        result = await self.db["user"].update_one(
-            {"_id": ObjectId(user_id)},
-            {"$set": {"is_active": is_active}}
-        )
-        return result.modified_count > 0
+        if user_id in self.db['users']:
+            self.db['users'][user_id]['is_active'] = is_active
+            return True
+        return False
 
     async def verify_user_email(self, user_id):
-        result = await self.db["user"].update_one(
-            {"_id": ObjectId(user_id)},
-            {"$set": {"email_verified": True}}
-        )
-        return result.modified_count > 0
+        if user_id in self.db['users']:
+            self.db['users'][user_id]['email_verified'] = True
+            return True
+        return False
