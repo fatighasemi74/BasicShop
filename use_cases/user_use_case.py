@@ -1,7 +1,7 @@
 from services.user_service import UserService
 from schemas.user import UserRole
 from typing import Optional
-from database import Database
+from database import InMemoryDatabase
 
 class UserUseCase:
     def __init__(self, db):

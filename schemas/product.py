@@ -9,7 +9,7 @@ class ProductCreateRequest(BaseModel):
     stock_quantity: int
 
 class ProductModel(BaseModel):
-    product_id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")
+    product_id: str 
     name: str
     description: str
     price: float
@@ -22,8 +22,4 @@ class ProductModel(BaseModel):
 
     class Config:
         orm_mode = True
-        populate_by_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {
-            ObjectId: lambda oid: str(oid)  # Convert ObjectId to string for JSON responses
-        }
+        use_enum_values = True
