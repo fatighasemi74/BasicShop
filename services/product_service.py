@@ -1,5 +1,6 @@
+from interfaces.iproduct import IProduct
 
-class ProductService:
+class ProductService(IProduct):
     def __init__(self, db):
         self.db = db
         if 'products' not in self.db:

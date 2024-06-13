@@ -1,8 +1,8 @@
-from services.product_service import ProductService
+from interfaces.iproduct import IProduct
 
 class ProductUseCase:
-    def __init__(self, db):
-        self.product_service = ProductService(db)
+    def __init__(self, product_service:IProduct):
+        self.product_service = product_service
 
     async def create_product(self, name: str, description: str, price: float, stock_quantity: int):
         product_id = await self.product_service.create_product(name, description, price, stock_quantity)

@@ -1,4 +1,3 @@
-from services.user_service import UserService
 from schemas.user import UserRole
 from typing import Optional
 from interfaces.iuser import IUser

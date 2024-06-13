@@ -1,6 +1,7 @@
 from fastapi import HTTPException, APIRouter, Depends, Path
 from schemas.product import ProductCreateRequest, ProductModel
 from use_cases.product_use_case import ProductUseCase
+from .depends.product_depend import get_product_use_case
 from database import InMemoryDatabase
 from typing import List
 
@@ -8,8 +9,7 @@ from typing import List
 router = APIRouter()
 
 @router.post("/products/", status_code=201, response_model=ProductModel)
-async def create_product(product_request: ProductCreateRequest, db = Depends(InMemoryDatabase.get_db)):
-    product_use_case = ProductUseCase(db)
+async def create_product(product_request: ProductCreateRequest, product_use_case: ProductUseCase = Depends(get_product_use_case)):
     try:
         product_id = await product_use_case.create_product(
             name=product_request.name,
@@ -28,8 +28,7 @@ async def create_product(product_request: ProductCreateRequest, db = Depends(InM
         raise HTTPException(status_code=400, detail=str)
 
 @router.get("/products/", response_model=List[ProductModel], status_code=200)
-async def get_products(db=Depends(InMemoryDatabase.get_db)):
-    product_use_case = ProductUseCase(db)
+async def get_products(product_use_case: ProductUseCase = Depends(get_product_use_case)):
     try:
         products = await product_use_case.get_products()
         return products
@@ -39,8 +38,7 @@ async def get_products(db=Depends(InMemoryDatabase.get_db)):
 
 
 @router.get("/products/{product_id}", response_model=ProductModel, status_code=200)
-async def get_product_by_id(product_id: str = Path(..., description="The ID of the product to retrieve"), db=Depends(InMemoryDatabase.get_db)):
-    product_use_case = ProductUseCase(db)
+async def get_product_by_id(product_id: str, product_use_case: ProductUseCase = Depends(get_product_use_case)):
     try:
         product = await product_use_case.get_product_by_id(product_id)
         if not product:
