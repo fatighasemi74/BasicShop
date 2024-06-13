@@ -1,7 +1,6 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List
 from .enums import OrderStatus
-from bson import ObjectId
 
 class ProductItem(BaseModel):
     product_id: str
@@ -13,9 +12,6 @@ class Order(BaseModel):
     item_ids: List[ProductItem]
     total_cost: float
     status: OrderStatus = OrderStatus.PENDING 
-    # quantity: int
-
-
 
     class Config:
         orm_mode = True

@@ -1,4 +1,4 @@
-from fastapi import HTTPException, APIRouter, Depends, Body, Path
+from fastapi import HTTPException, APIRouter, Depends, Path
 from schemas.product import ProductCreateRequest, ProductModel
 from use_cases.product_use_case import ProductUseCase
 from database import InMemoryDatabase

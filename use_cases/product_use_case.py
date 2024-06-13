@@ -1,5 +1,4 @@
 from services.product_service import ProductService
-from database import InMemoryDatabase
 
 class ProductUseCase:
     def __init__(self, db):

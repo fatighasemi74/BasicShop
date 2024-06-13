@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel
 
 
 class ProductCreateRequest(BaseModel):
@@ -13,10 +13,6 @@ class ProductModel(BaseModel):
     description: str
     price: float
     stock_quantity: int
-
-    # @validator('product_id', pre=True, always=True)
-    # def convert_id(cls, v):
-    #     return str(v)
 
 
     class Config:

@@ -1,8 +1,9 @@
 from pydantic import EmailStr
 from typing import Optional
 from schemas.enums import UserRole
+from interfaces.iuser import IUser
 
-class UserService:
+class UserService(IUser):
     def __init__(self, db):
         self.db = db
         if 'users' not in self.db:

@@ -2,7 +2,7 @@ from fastapi import HTTPException, APIRouter, Depends, Path
 from services.order_service import OrderService
 from database import InMemoryDatabase
 from typing import List
-from schemas.order import ProductItem, CreateOrderRequest, Order  
+from schemas.order import CreateOrderRequest, Order  
 from use_cases.order_use_case import OrderUseCase
 
 
