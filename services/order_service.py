@@ -1,11 +1,12 @@
+import uuid
+from interfaces.iorder import IOrder
 from typing import List
 from schemas.order import ProductItem
 from schemas.enums import OrderStatus
-import uuid
 
 
 
-class OrderService:
+class OrderService(IOrder):
     def __init__(self, db):
         self.db = db
         if 'orders' not in self.db:
@@ -36,6 +37,7 @@ class OrderService:
             })
         order_id = str(uuid.uuid4())
         order_document = {
+            "order_id": order_id,
             "user_id": user_id,
             "item_ids": item_data,
             "total_cost": total_cost,
@@ -51,6 +53,7 @@ class OrderService:
 
     async def get_order_by_id(self, order_id):
         return self.db["orders"].get(order_id)
+
 
     async def get_order_by_user(self, user_id):
         return [order for order in self.db["orders"].values() if order["user_id"] == user_id]

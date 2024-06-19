@@ -8,7 +8,7 @@ class ProductItem(BaseModel):
 
 class Order(BaseModel):
     order_id: str 
-    user_id: int
+    user_id: str
     item_ids: List[ProductItem]
     total_cost: float
     status: OrderStatus = OrderStatus.PENDING 
@@ -19,5 +19,5 @@ class Order(BaseModel):
 
 
 class CreateOrderRequest(BaseModel):
-    user_id: int
+    user_id: str
     items: List[ProductItem]
