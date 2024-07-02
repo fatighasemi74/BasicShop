@@ -5,7 +5,7 @@ from schemas.enums import UserRole
 
 class IUser(ABC):
     @abstractmethod
-    async def create_user(self, first_name: str, last_name: str, email: EmailStr, role: UserRole, bio: Optional[str] = None) -> str:
+    async def create_user(self, first_name: str, last_name: str, email: EmailStr, role: UserRole, password: str, bio: Optional[str] = None) -> str:
         pass
 
     @abstractmethod

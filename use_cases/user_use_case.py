@@ -6,8 +6,8 @@ class UserUseCase:
     def __init__(self, user_service: IUser):
         self.user_service = user_service
 
-    async def create_user(self, first_name: str, last_name: str, email: str, role: UserRole, bio: Optional[str] = None):
-        user_id = await self.user_service.create_user(first_name, last_name, email, role, bio)
+    async def create_user(self, first_name: str, last_name: str, email: str, role: UserRole, password: str, bio: Optional[str] = None):
+        user_id = await self.user_service.create_user(first_name, last_name, email, role, password, bio)
         return user_id
 
     async def get_users(self):
@@ -16,4 +16,8 @@ class UserUseCase:
     
     async def get_user_by_id(self, user_id: str):
         user = await self.user_service.get_user_by_id(user_id)
+        return user
+    
+    async def authenticate_user(self, email: str, password: str):
+        user = await self.user_service.authenticate_user(email, password)
         return user

@@ -7,6 +7,7 @@ class UserCreateRequest(BaseModel):
     last_name: str
     email: EmailStr
     role: UserRole
+    password: str
     bio: Optional[str] = None
 
 class UserModel(BaseModel):
@@ -22,3 +23,8 @@ class UserModel(BaseModel):
     class Config:
         orm_mode = True
         use_enum_values = True
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
